@@ -4,7 +4,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const productRouter = require('./routes/productRouter');
 const categoryRouter = require('./routes/categoryRouter');
-const adminRouter = require('./routes/adminRouter'); // Assuming you have admin routes
+const adminRouter = require('./routes/adminRouter');
 
 const app = express();
 
@@ -18,7 +18,10 @@ mongoose.connect(process.env.MONGO_URL)
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+
+// Increase payload limit for image uploads (base64 images can be large)
+app.use(express.json({ limit: '50mb' })); // Increased from default ~100kb to 50mb
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Routes
 app.get('/', (req, res) => {
@@ -27,7 +30,6 @@ app.get('/', (req, res) => {
 app.use('/api/products', productRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/admin', adminRouter); 
-
 
 // Start the server
 const PORT = process.env.PORT || 3000;
